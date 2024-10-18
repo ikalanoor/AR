@@ -65,39 +65,16 @@
         .submit-btn:hover {
             background-color: #0056b3;
         }
-        /* Style de la modale */
-        .modal {
-            display: none; 
-            position: fixed; 
-            z-index: 1; 
-            left: 0;
-            top: 0;
-            width: 100%; 
-            height: 100%; 
-            overflow: auto; 
-            background-color: rgb(0,0,0); 
-            background-color: rgba(0,0,0,0.4); 
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; 
+        .recap-container {
+            display: none;
+            margin-top: 20px;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%; 
+            background-color: #f8f9fa;
             border-radius: 10px;
             text-align: left;
         }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
+        .recap-container p {
+            margin: 5px 0;
         }
         .send-btn {
             margin-top: 15px;
@@ -142,27 +119,23 @@
         </form>
     </div>
 
-    <!-- Modale de récapitulatif -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Récapitulatif de la Commande</h2>
-            <p id="recapName"></p>
-            <p id="recapPhone"></p>
-            <p id="recapTicketType"></p>
-            <p id="recapQty"></p>
-            <p id="recapTotal"></p>
-            <p id="recapOrderNum"></p>
-            <p><strong>Instructions de paiement :</strong></p>
-            <p>Une fois votre paiement effectué, nous vous enverrons et / ou vous livrerons votre ticket.</p>
-            <ul>
-                <li>+261 33 78 03 232 (Jimmy Harison)</li>
-                <li>+261 34 92 10 959 (Ella Miharinoro)</li>
-                <li>+261 32 83 78 799 (Rado Randriamiharisoa)</li>
-            </ul>
-            <p>Référence : votre numéro de commande AREXXXX</p>
-            <button class="send-btn" onclick="sendForm()">Envoyer et Télécharger</button>
-        </div>
+    <div class="recap-container" id="recapContainer">
+        <h2>Récapitulatif de la Commande</h2>
+        <p id="recapName"></p>
+        <p id="recapPhone"></p>
+        <p id="recapTicketType"></p>
+        <p id="recapQty"></p>
+        <p id="recapTotal"></p>
+        <p id="recapOrderNum"></p>
+        <p><strong>Instructions de paiement :</strong></p>
+        <p>Une fois votre paiement effectué, nous vous enverrons et / ou vous livrerons votre ticket.</p>
+        <ul>
+            <li>+261 33 78 03 232 (Jimmy Harison)</li>
+            <li>+261 34 92 10 959 (Ella Miharinoro)</li>
+            <li>+261 32 83 78 799 (Rado Randriamiharisoa)</li>
+        </ul>
+        <p>Référence : votre numéro de commande AREXXXX</p>
+        <button class="send-btn" onclick="sendForm()">Envoyer et Télécharger</button>
     </div>
 
     <script>
@@ -182,8 +155,10 @@
             document.getElementById('recapTotal').innerText = 'Montant total : ' + total + ' MGA';
             document.getElementById('recapOrderNum').innerText = 'Numéro de commande : ' + orderNum;
 
+            document.getElementById('recapContainer').style.display = 'block';
+            document.querySelector('.form-container').style.display = 'none';
+
             generatePDF(name, phone, ticketType, qty, total, orderNum);
-            showModal(); // Ouvrir la modale
         }
 
         function generatePDF(name, phone, ticketType, qty, total, orderNum) {
@@ -207,20 +182,23 @@
             doc.save('recapitulatif_commande.pdf');
         }
 
-        function showModal() {
-            document.getElementById('myModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('myModal').style.display = 'none';
-        }
-
         function sendForm() {
-            const form = document.getElementById('ticketForm');
-            // Ajoutez ici votre logique pour envoyer le formulaire
-            alert('Formulaire envoyé avec succès!');
-            form.reset(); // Réinitialise le formulaire
-            closeModal(); // Ferme la modale
+            const formData = new FormData(document.getElementById('ticketForm'));
+            formData.append('orderNum', document.getElementById('recapOrderNum').innerText);
+
+            fetch("https://formspree.io/f/xovqqkry", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    alert("Commande envoyée avec succès !");
+                } else {
+                    alert("Erreur lors de l'envoi du formulaire. Veuillez réessayer.");
+                }
+            });
         }
     </script>
 </body>
