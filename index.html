@@ -9,20 +9,34 @@
             font-family: Arial, sans-serif;
             background-color: #f9f9f9;
         }
-        .form-container {
+        .form-container, .recap-container {
             padding: 20px;
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin: 20px;
         }
-        .recap-container {
-            display: none;
+        .modal {
+            display: none; /* Caché par défaut */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
             padding: 20px;
-            background-color: #fff;
+            border: 1px solid #888;
+            width: 80%;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            text-align: center;
         }
         .submit-btn, .send-btn {
             display: inline-block;
@@ -63,6 +77,9 @@
             document.getElementById('recapTotal').innerText = 'Montant total : ' + total + ' MGA';
             document.getElementById('recapOrderNum').innerText = 'Numéro de commande : ' + orderNum;
 
+            // Ajouter le numéro de commande au champ caché
+            form.order_num.value = orderNum;
+
             document.getElementById('recapContainer').style.display = 'block';
             document.querySelector('.form-container').style.display = 'none';
 
@@ -100,17 +117,22 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    // Appeler la fonction pour afficher le message de confirmation
-                    showConfirmationMessage();
+                    // Appeler la fonction pour afficher la boîte de dialogue modale
+                    showModal();
                 } else {
                     alert("Erreur lors de l'envoi du formulaire. Veuillez réessayer.");
                 }
             });
         }
 
-        function showConfirmationMessage() {
-            // Afficher un message de confirmation
-            alert("Votre commande a bien été envoyée et téléchargée. Vérifiez votre dossier de téléchargement. Merci de votre confiance et à très bientôt !");
+        function showModal() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "block"; // Afficher la modale
+        }
+
+        function closeModal() {
+            const modal = document.getElementById("myModal");
+            modal.style.display = "none"; // Cacher la modale
         }
     </script>
 </head>
@@ -132,6 +154,9 @@
 
             <label for="ticket_qty">Nombre de Tickets</label>
             <input type="number" id="ticket_qty" name="ticket_qty" min="1" value="1" required>
+
+            <!-- Champ caché pour le numéro de commande -->
+            <input type="hidden" name="order_num" required>
 
             <button type="submit" class="submit-btn">Valider la commande</button>
         </form>
@@ -155,6 +180,15 @@
         <p>Une fois votre paiement effectué, nous vous enverrons et / ou vous livrerons votre ticket.</p>
         <p>Référence : votre numéro de commande AREXXXX</p>
         <button class="send-btn" onclick="generatePDF()">Envoyer et Télécharger</button>
+    </div>
+
+    <!-- Boîte de dialogue modale -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p>Votre commande a bien été envoyée et téléchargée !</p>
+            <p>Vérifiez votre dossier de téléchargement, merci de votre confiance et à très bientôt !</p>
+        </div>
     </div>
 </body>
 </html>
