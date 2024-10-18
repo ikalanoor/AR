@@ -3,94 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commande de Ticket</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Commande de Ticket - Professionnel</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f4f7fa;
-            color: #333;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
             margin: 0;
-            padding: 0;
         }
-        .form-container, .recap-container {
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
             padding: 30px;
-            background-color: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         h2 {
             text-align: center;
-            color: #007bff;
+            color: #333;
         }
         label {
-            font-weight: 700;
-            margin: 10px 0 5px;
             display: block;
+            margin: 15px 0 5px;
+            color: #555;
         }
         input[type="text"], input[type="tel"], input[type="number"], input[type="radio"] {
             width: calc(100% - 20px);
             padding: 10px;
-            margin: 5px 0 15px;
-            border: 1px solid #007bff;
-            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
             box-sizing: border-box;
             font-size: 16px;
         }
-        input[type="radio"] {
-            width: auto;
-            margin-right: 10px;
+        .ticket-options {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
         }
-        .send-btn {
-            display: block;
-            width: 100%;
-            background-color: #007bff; /* Couleur bleue */
-            color: white; /* Texte blanc */
-            padding: 12px;
-            font-size: 18px;
+        .ticket-options label {
+            margin: 0;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 45%;
             text-align: center;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
             border: none;
-            border-radius: 8px; /* Bords arrondis */
+            border-radius: 50px;
+            font-size: 18px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
+            text-align: center;
         }
-        .send-btn:hover {
-            background-color: #0056b3; /* Couleur bleue plus foncée au survol */
+        .submit-btn:hover {
+            background-color: #0056b3;
         }
-        .recap-container {
-            display: none; /* Cacher le récapitulatif par défaut */
-        }
+        /* Style de la modale */
         .modal {
-            display: none; /* Caché par défaut */
-            position: fixed;
-            z-index: 1;
+            display: none; 
+            position: fixed; 
+            z-index: 1; 
             left: 0;
             top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-            padding-top: 60px;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgb(0,0,0); 
+            background-color: rgba(0,0,0,0.4); 
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
+            margin: 15% auto; 
             padding: 20px;
             border: 1px solid #888;
-            width: 80%;
+            width: 80%; 
             border-radius: 10px;
-            text-align: center;
-            font-size: 16px;
+            text-align: left;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .send-btn {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .send-btn:hover {
+            background-color: #218838;
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        let orderNum;
+</head>
+<body>
+    <div class="form-container">
+        <h2>Commande de Ticket</h2>
+        <form id="ticketForm" onsubmit="event.preventDefault(); generateRecap(this);">
+            <label for="name">Nom*</label>
+            <input type="text" id="name" name="name" required>
 
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone" name="phone" placeholder="+261" required>
+
+            <label>Type de Ticket</label>
+            <div class="ticket-options">
+                <label>
+                    <input type="radio" id="simple" name="ticket_type" value="Simple" checked> Simple (25 000 MGA)
+                </label>
+                <label>
+                    <input type="radio" id="gold" name="ticket_type" value="Gold"> Gold (40 000 MGA)
+                </label>
+            </div>
+
+            <label for="ticket_qty">Nombre de Tickets</label>
+            <input type="number" id="ticket_qty" name="ticket_qty" min="1" value="1" required>
+
+            <button type="submit" class="submit-btn">Valider la commande</button>
+        </form>
+    </div>
+
+    <!-- Modale de récapitulatif -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Récapitulatif de la Commande</h2>
+            <p id="recapName"></p>
+            <p id="recapPhone"></p>
+            <p id="recapTicketType"></p>
+            <p id="recapQty"></p>
+            <p id="recapTotal"></p>
+            <p id="recapOrderNum"></p>
+            <p><strong>Instructions de paiement :</strong></p>
+            <p>Une fois votre paiement effectué, nous vous enverrons et / ou vous livrerons votre ticket.</p>
+            <ul>
+                <li>+261 33 78 03 232 (Jimmy Harison)</li>
+                <li>+261 34 92 10 959 (Ella Miharinoro)</li>
+                <li>+261 32 83 78 799 (Rado Randriamiharisoa)</li>
+            </ul>
+            <p>Référence : votre numéro de commande AREXXXX</p>
+            <button class="send-btn" onclick="sendForm()">Envoyer et Télécharger</button>
+        </div>
+    </div>
+
+    <script>
         function generateRecap(form) {
             const name = form.name.value;
             const phone = form.phone.value;
@@ -98,7 +173,7 @@
             const qty = form.ticket_qty.value;
             const price = ticketType === "Simple" ? 25000 : 40000;
             const total = price * qty;
-            orderNum = 'ARE' + Math.floor(10000 + Math.random() * 90000);
+            const orderNum = 'ARE' + Math.floor(10000 + Math.random() * 90000);
 
             document.getElementById('recapName').innerText = 'Nom : ' + name;
             document.getElementById('recapPhone').innerText = 'Téléphone : ' + phone;
@@ -107,14 +182,11 @@
             document.getElementById('recapTotal').innerText = 'Montant total : ' + total + ' MGA';
             document.getElementById('recapOrderNum').innerText = 'Numéro de commande : ' + orderNum;
 
-            // Ajouter le numéro de commande au champ caché
-            form.order_num.value = orderNum;
-
-            document.getElementById('recapContainer').style.display = 'block'; // Afficher le récapitulatif
-            document.querySelector('.form-container').style.display = 'none'; // Cacher le formulaire
+            generatePDF(name, phone, ticketType, qty, total, orderNum);
+            showModal(); // Ouvrir la modale
         }
 
-        function generatePDF(name, phone, ticketType, qty, total) {
+        function generatePDF(name, phone, ticketType, qty, total, orderNum) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
@@ -132,106 +204,24 @@
             doc.text(`+261 32 83 78 799 (Rado Randriamiharisoa)`, 10, 120);
             doc.text(`Référence : ${orderNum}`, 10, 130);
 
-            // Enregistrer le PDF
             doc.save('recapitulatif_commande.pdf');
         }
 
-        function sendForm(form) {
-            const formData = new FormData(form);
-            fetch("https://formspree.io/f/xovqqkry", {
-                method: "POST",
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            }).then(response => {
-                if (response.ok) {
-                    // Récupérer les données nécessaires
-                    const name = form.name.value;
-                    const phone = form.phone.value;
-                    const ticketType = form.ticket_type.value;
-                    const qty = form.ticket_qty.value;
-                    const price = ticketType === "Simple" ? 25000 : 40000;
-                    const total = price * qty;
-
-                    // Générer le PDF
-                    generatePDF(name, phone, ticketType, qty, total);
-
-                    // Afficher la modale après le téléchargement
-                    showModal();
-                } else {
-                    alert("Erreur lors de l'envoi du formulaire. Veuillez réessayer.");
-                }
-            });
-        }
-
-        function downloadPDFAndShowModal(form) {
-            const name = form.name.value;
-            const phone = form.phone.value;
-            const ticketType = form.ticket_type.value;
-            const qty = form.ticket_qty.value;
-            const price = ticketType === "Simple" ? 25000 : 40000;
-            const total = price * qty;
-
-            // Générer et télécharger le PDF
-            generatePDF(name, phone, ticketType, qty, total);
-            showModal(); // Afficher la modale après le téléchargement
-        }
-
         function showModal() {
-            const modal = document.getElementById("myModal");
-            modal.style.display = "block"; // Afficher la modale
+            document.getElementById('myModal').style.display = 'block';
         }
 
         function closeModal() {
-            const modal = document.getElementById("myModal");
-            modal.style.display = "none"; // Cacher la modale
+            document.getElementById('myModal').style.display = 'none';
+        }
+
+        function sendForm() {
+            const form = document.getElementById('ticketForm');
+            // Ajoutez ici votre logique pour envoyer le formulaire
+            alert('Formulaire envoyé avec succès!');
+            form.reset(); // Réinitialise le formulaire
+            closeModal(); // Ferme la modale
         }
     </script>
-</head>
-<body>
-    <div class="form-container">
-        <h2>Commande de Ticket</h2>
-        <form id="ticketForm" onsubmit="event.preventDefault(); generateRecap(this);">
-            <label for="name">Nom*</label>
-            <input type="text" id="name" name="name" required>
-
-            <label for="phone">Téléphone</label>
-            <input type="tel" id="phone" name="phone" placeholder="+261">
-
-            <label>Type de Ticket</label>
-            <input type="radio" id="simple" name="ticket_type" value="Simple" checked>
-            <label for="simple" style="display: inline;">Simple (25 000 MGA)</label>
-            <input type="radio" id="vip" name="ticket_type" value="VIP">
-            <label for="vip" style="display: inline;">VIP (40 000 MGA)</label>
-
-            <label for="qty">Nombre de Tickets*</label>
-            <input type="number" id="qty" name="ticket_qty" min="1" required>
-
-            <button type="submit" class="send-btn">Valider la commande</button>
-        </form>
-    </div>
-
-    <div class="recap-container" id="recapContainer">
-        <h2>Récapitulatif de Commande</h2>
-        <p id="recapName"></p>
-        <p id="recapPhone"></p>
-        <p id="recapTicketType"></p>
-        <p id="recapQty"></p>
-        <p id="recapTotal"></p>
-        <p id="recapOrderNum"></p>
-        <input type="hidden" name="order_num" value="">
-        <button class="send-btn" onclick="downloadPDFAndShowModal(document.getElementById('ticketForm'))">Envoyer et Télécharger</button>
-    </div>
-
-    <!-- Modale de confirmation -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()" style="float:right; cursor:pointer;">&times;</span>
-            <h2>Merci pour votre commande !</h2>
-            <p>Votre commande a bien été envoyée et téléchargée.</p>
-            <p>Vérifiez votre dossier de téléchargement, merci de votre confiance et à très bientôt !</p>
-        </div>
-    </div>
 </body>
 </html>
