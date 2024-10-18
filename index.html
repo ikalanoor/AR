@@ -100,11 +100,17 @@
                 }
             }).then(response => {
                 if (response.ok) {
-                    alert("Votre commande est bien envoyée, merci de votre confiance !");
+                    // Appeler la fonction pour afficher le message de confirmation
+                    showConfirmationMessage();
                 } else {
                     alert("Erreur lors de l'envoi du formulaire. Veuillez réessayer.");
                 }
             });
+        }
+
+        function showConfirmationMessage() {
+            // Afficher un message de confirmation
+            alert("Votre commande a bien été envoyée et téléchargée. Vérifiez votre dossier de téléchargement. Merci de votre confiance et à très bientôt !");
         }
     </script>
 </head>
